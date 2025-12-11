@@ -15,6 +15,15 @@ This application is refactored to run fully static:
 
 You can run, build, and deploy the app without any environment configuration.
 
+## Favorites (local-only)
+- Favorites are stored locally in the browser’s `localStorage` under the key `recipe_favorites`.
+- The UI shows a heart toggle on cards and on the recipe detail page.
+- The header displays a small badge with the current count and links to `/favorites`.
+- The Favorites page lists only your saved recipes; if none, an empty state is shown.
+- The feature is fully reactive across pages via a shared service and does not perform any network requests.
+
+To clear your favorites, clear site data in your browser or remove the `recipe_favorites` key from localStorage.
+
 ## How to re-enable API mode (optional)
 If you later need to connect to a backend API:
 1. Re-introduce HttpClient in the app providers:
@@ -31,10 +40,11 @@ Until then, the current static mode guarantees there are no outgoing requests.
 ## Routes
 - `/` Explore recipes (search + grid + pagination)
 - `/recipe/:id` Recipe details
-- `/favorites` Placeholder
+- `/favorites` Favorite recipes
 
 ## Accessibility
 - Keyboard focus styles, semantic headings, alt text for images, ARIA labels on search.
+- Favorite toggle buttons include `aria-pressed` and accessible labels.
 
 ## Theme
 Ocean Professional:
