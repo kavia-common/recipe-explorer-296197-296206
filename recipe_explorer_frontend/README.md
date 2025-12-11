@@ -7,19 +7,26 @@ Modern, responsive UI for browsing and viewing recipes.
   `npm start`
   Open the running preview at the provided URL on port 3000.
 
-## Configuration
+## Mode: Static by default (no network calls)
+This application is refactored to run fully static:
+- Uses only in-memory mock data bundled in the app.
+- Does not read or require any NG_APP_* environment variables at runtime or build time.
+- Makes no HTTP or WebSocket calls.
 
-This app reads environment from NG_APP_* variables when available. Sensible defaults are applied when values are undefined.
+You can run, build, and deploy the app without any environment configuration.
 
-Supported variables:
-- NG_APP_API_BASE: Base URL for backend API (e.g., https://api.example.com). If empty, the app can fallback to mock data when enabled.
-- NG_APP_BACKEND_URL, NG_APP_FRONTEND_URL, NG_APP_WS_URL: Optional URLs for integrations.
-- NG_APP_NODE_ENV, NG_APP_ENABLE_SOURCE_MAPS, NG_APP_PORT, NG_APP_TRUST_PROXY, NG_APP_LOG_LEVEL, NG_APP_HEALTHCHECK_PATH: Optional runtime knobs.
-- NG_APP_FEATURE_FLAGS: JSON string for feature switches. Example: {"mockData": true}
-- NG_APP_EXPERIMENTS_ENABLED: true/false
+## How to re-enable API mode (optional)
+If you later need to connect to a backend API:
+1. Re-introduce HttpClient in the app providers:
+   - In `src/app/app.config.ts`, add `provideHttpClient()` to the provider list.
+2. Update `RecipeService` to use HttpClient when an API base is present:
+   - Replace the static-only implementation with a dual-mode version that builds URLs from `APP_ENV.apiBase`.
+3. Provide environment values:
+   - Wire up `APP_ENV` to read NG_APP_* values as needed (see `src/app/core/env.token.ts` for the static version you can extend).
+4. Build-time configuration:
+   - Optionally configure environment variables via your hosting platform and expose them at build time.
 
-Mock data:
-- When NG_APP_API_BASE is empty and feature flag `mockData` is true, the app uses a local in‑memory dataset and simulates latency. Disable by setting NG_APP_FEATURE_FLAGS to {"mockData": false} or providing NG_APP_API_BASE.
+Until then, the current static mode guarantees there are no outgoing requests.
 
 ## Routes
 - `/` Explore recipes (search + grid + pagination)
@@ -36,10 +43,3 @@ Ocean Professional:
 
 ## Testing hooks
 - Elements include ids prefixed with `qa-` for e2e selectors (e.g., `#qa-search-input`, `#qa-recipes-grid`).
-
-## Notes
-- If backend endpoints exist, expected routes:
-  - GET `${NG_APP_API_BASE}/recipes/search?q=...&tags=...&minRating=...&page=1&pageSize=12`
-  - GET `${NG_APP_API_BASE}/recipes/:id`
-
-If endpoints are unavailable, enable the mockData feature flag.
