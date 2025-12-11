@@ -1,0 +1,30 @@
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  background: linear-gradient(135deg, rgba(59,130,246,0.08), #f9fafb);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(17,24,39,0.06);
+}
+
+.brand-link {
+  color: #111827;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.nav-link {
+  color: #2563EB;
+  text-decoration: none;
+  margin-left: 16px;
+  font-weight: 600;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}

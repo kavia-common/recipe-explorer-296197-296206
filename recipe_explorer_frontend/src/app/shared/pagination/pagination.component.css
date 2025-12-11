@@ -1,0 +1,22 @@
+.pager {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  margin-top: 14px;
+}
+.btn {
+  background: #fff;
+  color: #111827;
+  border: 1px solid rgba(17,24,39,0.12);
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-weight: 600;
+}
+.btn.num.active {
+  background: #2563EB;
+  color: #fff;
+  border-color: #2563EB;
+}
+.btn:disabled {
+  opacity: .5;
+}

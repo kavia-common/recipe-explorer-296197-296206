@@ -1,59 +1,45 @@
-# Angular
+# Recipe Explorer Frontend (Angular)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.1.
+Modern, responsive UI for browsing and viewing recipes.
 
-## Development server
+## Run
+- Dev server (already configured for port 3000):
+  `npm start`
+  Open the running preview at the provided URL on port 3000.
 
-To start a local development server, run:
+## Configuration
 
-```bash
-ng serve
-```
+This app reads environment from NG_APP_* variables when available. Sensible defaults are applied when values are undefined.
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Supported variables:
+- NG_APP_API_BASE: Base URL for backend API (e.g., https://api.example.com). If empty, the app can fallback to mock data when enabled.
+- NG_APP_BACKEND_URL, NG_APP_FRONTEND_URL, NG_APP_WS_URL: Optional URLs for integrations.
+- NG_APP_NODE_ENV, NG_APP_ENABLE_SOURCE_MAPS, NG_APP_PORT, NG_APP_TRUST_PROXY, NG_APP_LOG_LEVEL, NG_APP_HEALTHCHECK_PATH: Optional runtime knobs.
+- NG_APP_FEATURE_FLAGS: JSON string for feature switches. Example: {"mockData": true}
+- NG_APP_EXPERIMENTS_ENABLED: true/false
 
-## Code scaffolding
+Mock data:
+- When NG_APP_API_BASE is empty and feature flag `mockData` is true, the app uses a local in‑memory dataset and simulates latency. Disable by setting NG_APP_FEATURE_FLAGS to {"mockData": false} or providing NG_APP_API_BASE.
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Routes
+- `/` Explore recipes (search + grid + pagination)
+- `/recipe/:id` Recipe details
+- `/favorites` Placeholder
 
-```bash
-ng generate component component-name
-```
+## Accessibility
+- Keyboard focus styles, semantic headings, alt text for images, ARIA labels on search.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Theme
+Ocean Professional:
+- Primary `#2563EB`, Secondary/Success `#F59E0B`, Error `#EF4444`, Background `#f9fafb`, Surface `#ffffff`, Text `#111827`.
+- Subtle shadows, rounded corners, smooth transitions and gradients.
 
-```bash
-ng generate --help
-```
+## Testing hooks
+- Elements include ids prefixed with `qa-` for e2e selectors (e.g., `#qa-search-input`, `#qa-recipes-grid`).
 
-## Building
+## Notes
+- If backend endpoints exist, expected routes:
+  - GET `${NG_APP_API_BASE}/recipes/search?q=...&tags=...&minRating=...&page=1&pageSize=12`
+  - GET `${NG_APP_API_BASE}/recipes/:id`
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+If endpoints are unavailable, enable the mockData feature flag.

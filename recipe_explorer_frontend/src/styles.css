@@ -1,12 +1,32 @@
-/* Global styles for minimalistic design */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+:root{
+  --color-primary:#2563EB;
+  --color-secondary:#F59E0B;
+  --color-error:#EF4444;
+  --color-bg:#f9fafb;
+  --color-surface:#ffffff;
+  --color-text:#111827;
 }
 
+*{ margin:0; padding:0; box-sizing:border-box; }
 html, body {
   height: 100%;
-  background-color: #ffffff;
+  background: var(--color-bg);
+  color: var(--color-text);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
+
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 3px solid rgba(37,99,235,0.5);
+  outline-offset: 2px;
+}
+
+/* Utility */
+.container { width: 100%; }
+.surface { background: var(--color-surface); }
+.text-muted { color: #6B7280; }
+.primary { color: var(--color-primary); }
+.bg-primary { background: var(--color-primary); color: #fff; }
+.rounded { border-radius: 12px; }
+shadow-s { box-shadow: 0 2px 10px rgba(17,24,39,0.06); }
+shadow-m { box-shadow: 0 8px 24px rgba(17,24,39,0.08); }

@@ -1,0 +1,30 @@
+.skeleton {
+  border: 1px solid rgba(17,24,39,0.06);
+  border-radius: 12px;
+  padding: 10px;
+  background: #fff;
+}
+.thumb {
+  height: 160px;
+  border-radius: 8px;
+  background: #E5E7EB;
+  margin-bottom: 10px;
+}
+.line {
+  height: 12px;
+  background: #E5E7EB;
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+.line.short {
+  width: 60%;
+}
+.shimmer {
+  background: linear-gradient(90deg, #E5E7EB 0px, #F3F4F6 40px, #E5E7EB 80px);
+  background-size: 600px;
+  animation: shimmer 1.2s infinite;
+}
+@keyframes shimmer {
+  0% { background-position: -200px 0; }
+  100% { background-position: 400px 0; }
+}
