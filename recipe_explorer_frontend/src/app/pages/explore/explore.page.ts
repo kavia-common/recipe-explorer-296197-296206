@@ -108,11 +108,32 @@ export class ExplorePage implements OnInit, OnDestroy {
   hasInteracted = signal<boolean>(false);
 
   // Pretty-printed JSON bound to the same array as the grid. Recomputes when recipes() changes.
+  // When empty, show a helpful placeholder with the expected structure (purely visual).
   prettyRecipes = computed(() => {
     try {
-      return JSON.stringify(this.recipes(), null, 2);
+      const arr = this.recipes() as any[];
+      if (Array.isArray(arr) && arr.length === 0) {
+        const sample = [
+          {
+            id: "string",
+            title: "string",
+            image: "string (URL)",
+            cuisine: "string",
+            diet: "string",
+            prepTime: "number (minutes)",
+            rating: "number (0-5)",
+            tags: ["string", "string"],
+            description: "string"
+          }
+        ];
+        return [
+          "No results to display. Showing sample structure.",
+          JSON.stringify(sample, null, 2)
+        ].join("\n");
+      }
+      return JSON.stringify(arr, null, 2);
     } catch {
-      return '[]';
+      return "No results to display. Showing sample structure.\n[\n  {\n    \"id\": \"string\",\n    \"title\": \"string\",\n    \"image\": \"string (URL)\",\n    \"cuisine\": \"string\",\n    \"diet\": \"string\",\n    \"prepTime\": \"number (minutes)\",\n    \"rating\": \"number (0-5)\",\n    \"tags\": [\"string\", \"string\"],\n    \"description\": \"string\"\n  }\n]";
     }
   });
 
