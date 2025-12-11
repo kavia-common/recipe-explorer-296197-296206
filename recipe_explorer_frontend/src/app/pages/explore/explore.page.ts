@@ -44,7 +44,7 @@ import { Subject } from 'rxjs';
         ></app-recipe-grid>
 
         <app-empty-state
-          *ngIf="!loading() && !error() && recipes().length === 0"
+          *ngIf="!loading() && !error() && recipes().length === 0 && hasInteracted()"
           title="No results"
           subtitle="Try refining your query."
         ></app-empty-state>
@@ -76,6 +76,8 @@ export class ExplorePage implements OnInit, OnDestroy {
   bgGradient = 'linear-gradient(135deg, rgba(59,130,246,0.08), #f9fafb)';
 
   private searchChanges$ = new Subject<void>();
+  // Track if the user has interacted (searched or paginated) to control empty-state display.
+  hasInteracted = signal<boolean>(false);
 
   ngOnInit(): void {
     // Initialize from query params
@@ -85,14 +87,16 @@ export class ExplorePage implements OnInit, OnDestroy {
           q: p.get('q') || '',
           page: Number(p.get('page') || '1'),
         })),
-        distinctUntilChanged(
-          (a, b) => a.q === b.q && a.page === b.page
-        )
+        distinctUntilChanged((a, b) => a.q === b.q && a.page === b.page)
       )
       .pipe(takeUntilDestroyed())
       .subscribe(({ q, page }) => {
+        const normPage = Number.isFinite(page) && page > 0 ? page : 1;
+        const wasInteracted = (q && q.length > 0) || normPage !== 1;
         this.query.set(q);
-        this.page.set(Number.isFinite(page) && page > 0 ? page : 1);
+        this.page.set(normPage);
+        // Only mark as interacted if the URL actually specified something
+        this.hasInteracted.set(!!wasInteracted);
         this.fetch();
       });
 
@@ -107,12 +111,14 @@ export class ExplorePage implements OnInit, OnDestroy {
   onSearch(q: string) {
     this.query.set(q);
     this.page.set(1);
+    this.hasInteracted.set(true);
     this.syncUrl();
     this.searchChanges$.next();
   }
 
   onPageChange(p: number) {
     this.page.set(p);
+    this.hasInteracted.set(true);
     this.syncUrl();
     this.searchChanges$.next();
   }

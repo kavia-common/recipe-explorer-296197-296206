@@ -4,6 +4,10 @@ import { RecipeDetail, RecipeSummary } from '../models/recipe.models';
 
 const STORAGE_KEY = 'recipe_favorites';
 
+// Toggle to pre-seed a few favorites for demos. Disabled by default.
+const ENABLE_SEEDED_FAVORITES = false;
+const SEEDED_IDS = ['2', '5', '10'];
+
 /**
  * PUBLIC_INTERFACE
  * FavoritesService manages favorite recipe IDs with localStorage persistence,
@@ -17,16 +21,25 @@ export class FavoritesService {
   private loadFromStorage(): Set<string> {
     try {
       const raw = globalThis?.localStorage?.getItem(STORAGE_KEY);
-      if (!raw) return new Set<string>();
-      const arr = JSON.parse(raw) as string[];
-      return new Set(Array.isArray(arr) ? arr : []);
+      if (raw) {
+        const arr = JSON.parse(raw) as string[];
+        return new Set(Array.isArray(arr) ? arr : []);
+      }
+      // If none in storage and seeding enabled, start with seeded IDs
+      if (ENABLE_SEEDED_FAVORITES) {
+        const seeded = new Set(SEEDED_IDS);
+        // write once so subsequent reloads keep them unless toggled by user
+        this.persist(seeded);
+        return seeded;
+      }
+      return new Set<string>();
     } catch {
       return new Set<string>();
     }
   }
 
   /** Helper to write to localStorage */
-  private saveToStorage(set: Set<string>) {
+  private persist(set: Set<string>) {
     try {
       const arr = Array.from(set);
       globalThis?.localStorage?.setItem(STORAGE_KEY, JSON.stringify(arr));
@@ -54,7 +67,7 @@ export class FavoritesService {
       next.add(id);
     }
     this.favorites$.next(next);
-    this.saveToStorage(next);
+    this.persist(next);
   }
 
   // PUBLIC_INTERFACE

@@ -15,12 +15,26 @@ This application is refactored to run fully static:
 
 You can run, build, and deploy the app without any environment configuration.
 
+## Sample data (Explore shows results on first load)
+- The Explore page preloads the entire embedded dataset so users immediately see recipes without typing a query.
+- The mock dataset includes ~18 diverse recipes across cuisines and diets with ratings and tags.
+- Recipe images are lightweight inline SVG placeholders (no remote images) to keep the app fully offline-friendly.
+- To adjust the sample list, edit `src/app/core/services/mock-data.ts`:
+  - Add/remove recipes or tweak titles, tags, and ratings.
+  - Increase `pageSize` on Explore to show more cards per page if desired.
+
 ## Favorites (local-only)
 - Favorites are stored locally in the browser’s `localStorage` under the key `recipe_favorites`.
 - The UI shows a heart toggle on cards and on the recipe detail page.
 - The header displays a small badge with the current count and links to `/favorites`.
 - The Favorites page lists only your saved recipes; if none, an empty state is shown.
 - The feature is fully reactive across pages via a shared service and does not perform any network requests.
+
+### Simulate pre-favorited items (optional)
+- You can pre-seed a few favorites for demos by enabling a small flag:
+  - Open `src/app/core/services/favorites.service.ts`
+  - Set `ENABLE_SEEDED_FAVORITES` to `true`. The seeded IDs are defined in `SEEDED_IDS`.
+- Alternatively, manually add some favorites by clicking the heart icons in the UI.
 
 To clear your favorites, clear site data in your browser or remove the `recipe_favorites` key from localStorage.
 
