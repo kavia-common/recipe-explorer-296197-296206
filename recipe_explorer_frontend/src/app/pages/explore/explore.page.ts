@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AppHeaderComponent } from '../../shared/app-header/app-header.component';
@@ -11,6 +11,8 @@ import { RecipeService } from '../../core/services/recipe.service';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { debounceTime, distinctUntilChanged, map } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+
+const SESSION_KEY_SHOW_DUMP = 'explore_show_dump';
 
 @Component({
   standalone: true,
@@ -31,6 +33,29 @@ import { Subject } from 'rxjs';
       <section class="content">
         <h1 class="visually-hidden">Explore Recipes</h1>
         <app-search-bar [query]="query()" (search)="onSearch($event)"></app-search-bar>
+
+        <div class="debug-toggle-wrap">
+          <button
+            type="button"
+            class="debug-toggle-btn"
+            (click)="toggleDump()"
+            [attr.aria-pressed]="showDump()"
+            aria-label="Show data"
+            id="qa-explore-show-data"
+          >
+            {{ showDump() ? 'Hide data' : 'Show data' }}
+          </button>
+        </div>
+
+        <section
+          *ngIf="showDump()"
+          class="debug-dump"
+          role="region"
+          aria-label="Current recipes data"
+          id="qa-explore-dump"
+        >
+          <pre class="debug-pre">{{ prettyRecipes() }}</pre>
+        </section>
 
         <app-error-banner
           *ngIf="error()"
@@ -72,6 +97,9 @@ export class ExplorePage implements OnInit, OnDestroy {
   loading = signal<boolean>(false);
   error = signal<string | null>(null);
 
+  // Debug toggle state with session persistence (off by default)
+  showDump = signal<boolean>(false);
+
   pageSize = 12;
   bgGradient = 'linear-gradient(135deg, rgba(59,130,246,0.08), #f9fafb)';
 
@@ -79,7 +107,24 @@ export class ExplorePage implements OnInit, OnDestroy {
   // Track if the user has interacted (searched or paginated) to control empty-state display.
   hasInteracted = signal<boolean>(false);
 
+  // Pretty-printed JSON bound to the same array as the grid. Recomputes when recipes() changes.
+  prettyRecipes = computed(() => {
+    try {
+      return JSON.stringify(this.recipes(), null, 2);
+    } catch {
+      return '[]';
+    }
+  });
+
   ngOnInit(): void {
+    // Load debug toggle from session storage (if present)
+    try {
+      const raw = globalThis?.sessionStorage?.getItem(SESSION_KEY_SHOW_DUMP);
+      if (raw === '1') this.showDump.set(true);
+    } catch {
+      // ignore storage errors
+    }
+
     // Initialize from query params
     this.route.queryParamMap
       .pipe(
@@ -125,6 +170,20 @@ export class ExplorePage implements OnInit, OnDestroy {
 
   refresh() {
     this.searchChanges$.next();
+  }
+
+  toggleDump() {
+    const next = !this.showDump();
+    this.showDump.set(next);
+    try {
+      if (next) {
+        globalThis?.sessionStorage?.setItem(SESSION_KEY_SHOW_DUMP, '1');
+      } else {
+        globalThis?.sessionStorage?.removeItem(SESSION_KEY_SHOW_DUMP);
+      }
+    } catch {
+      // ignore storage errors
+    }
   }
 
   private syncUrl() {
