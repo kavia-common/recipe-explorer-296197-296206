@@ -108,32 +108,82 @@ export class ExplorePage implements OnInit, OnDestroy {
   hasInteracted = signal<boolean>(false);
 
   // Pretty-printed JSON bound to the same array as the grid. Recomputes when recipes() changes.
-  // When empty, show a helpful placeholder with the expected structure (purely visual).
+  // When empty, show a small, realistic sample (visual-only) reflecting the app schema.
   prettyRecipes = computed(() => {
     try {
       const arr = this.recipes() as any[];
       if (Array.isArray(arr) && arr.length === 0) {
+        // Build a minimal visual-only sample for the dump panel using the same
+        // fields used in the app grid and detail. We synthesize cuisine/diet/prepTime
+        // from tags/description to keep this inline and static.
         const sample = [
           {
-            id: "string",
-            title: "string",
-            image: "string (URL)",
-            cuisine: "string",
-            diet: "string",
-            prepTime: "number (minutes)",
-            rating: "number (0-5)",
-            tags: ["string", "string"],
-            description: "string"
+            id: "1",
+            title: "Lemon Herb Grilled Salmon",
+            image: "inline-svg (local placeholder)",
+            cuisine: "Mediterranean",
+            diet: "Pescatarian",
+            prepTime: 15,
+            rating: 4.6,
+            tags: ["seafood", "grill", "healthy", "mediterranean"],
+            description: "Succulent salmon marinated with lemon and fresh herbs, grilled to perfection."
+          },
+          {
+            id: "2",
+            title: "Creamy Mushroom Pasta",
+            image: "inline-svg (local placeholder)",
+            cuisine: "Italian",
+            diet: "Vegetarian",
+            prepTime: 10,
+            rating: 4.8,
+            tags: ["vegetarian", "pasta", "comfort", "italian"],
+            description: "Al dente pasta coated in a rich, creamy mushroom sauce."
+          },
+          {
+            id: "4",
+            title: "Spicy Chicken Tacos",
+            image: "inline-svg (local placeholder)",
+            cuisine: "Mexican",
+            diet: "Omnivore",
+            prepTime: 15,
+            rating: 4.5,
+            tags: ["chicken", "spicy", "mexican", "street-food"],
+            description: "Juicy chicken seasoned with spices, served in warm tortillas with fresh toppings."
+          },
+          {
+            id: "6",
+            title: "Thai Green Curry",
+            image: "inline-svg (local placeholder)",
+            cuisine: "Thai",
+            diet: "Flexible",
+            prepTime: 15,
+            rating: 4.4,
+            tags: ["thai", "curry", "spicy", "gluten-free"],
+            description: "Coconut-based curry with green chilies, veggies, and your choice of protein."
           }
         ];
         return [
-          "No results to display. Showing sample structure.",
+          "No results to display. Showing sample results.",
           JSON.stringify(sample, null, 2)
         ].join("\n");
       }
       return JSON.stringify(arr, null, 2);
     } catch {
-      return "No results to display. Showing sample structure.\n[\n  {\n    \"id\": \"string\",\n    \"title\": \"string\",\n    \"image\": \"string (URL)\",\n    \"cuisine\": \"string\",\n    \"diet\": \"string\",\n    \"prepTime\": \"number (minutes)\",\n    \"rating\": \"number (0-5)\",\n    \"tags\": [\"string\", \"string\"],\n    \"description\": \"string\"\n  }\n]";
+      // Fallback: still provide a realistic sample block if stringify fails
+      const fallbackSample = [
+        {
+          id: "1",
+          title: "Lemon Herb Grilled Salmon",
+          image: "inline-svg (local placeholder)",
+          cuisine: "Mediterranean",
+          diet: "Pescatarian",
+          prepTime: 15,
+          rating: 4.6,
+          tags: ["seafood", "grill", "healthy", "mediterranean"],
+          description: "Succulent salmon marinated with lemon and fresh herbs, grilled to perfection."
+        }
+      ];
+      return "No results to display. Showing sample results.\n" + JSON.stringify(fallbackSample, null, 2);
     }
   });
 
